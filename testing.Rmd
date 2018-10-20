@@ -1,0 +1,33 @@
+---
+title: "Exploratory"
+author: "Kushin"
+date: "10/20/2018"
+output: html_document
+---
+```{r}
+library(ggplot2)
+library(dplyr)
+raw_data<- read.csv('itineraries-2017.csv')
+
+mean_ny_data<-raw_data%>%filter(ORIGIN_STATE_ABR=='NY')%>%group_by(DEST_STATE_ABR)%>%summarise(mean_fare= mean(MARKET_FARE), mean_dist = mean(MARKET_DISTANCE), num_lay= mean(numLayovers))
+
+model1<-lm(mean_fare~ mean_dist+num_lay+num_lay*mean_dist, data= mean_ny_data)
+model2<-lm(mean_fare~ mean_dist+num_lay, data= mean_ny_data)
+summary(model1)
+
+
+ft<-anova(model1,model2)
+ft
+
+
+ggplot()+geom_point(aes(x=mean_dist, y=mean_fare, col=num_lay), data=mean_ny_data)
+```
+
+```{r}
+model3<- lm(MARKET_FARE~MARKET_DISTANCE+numLayovers+QUARTER+numLayovers*MARKET_DISTANCE,data=raw_data)
+summary(model3)
+
+ggplot() + geom_point(aes(x=MARKET_DISTANCE,y=MARKET_FARE, col=QUARTER),data=raw_data)+ylim(0,2000)
+ggplot() + geom_point(aes(x=MARKET_DISTANCE,y=MARKET_FARE, col=numLayovers),data=raw_data)+ylim(0,2000)
+ggplot() + geom_boxplot(aes(x=factor(QUARTER), y = MARKET_FARE),data=raw_data)
+```
