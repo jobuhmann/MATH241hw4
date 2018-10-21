@@ -27,6 +27,7 @@ model2<-lm(mean_fare~ mean_dist+num_lay, data= mean_nyo_data)
 summary(model1)
 summary(model2)
 ft1<-anova(model1,model2)
+ft1
 
 model3<-lm(mean_fare~ mean_dist+num_lay+num_lay*mean_dist, data= mean_nyi_data)
 model4<-lm(mean_fare~ mean_dist+num_lay, data= mean_nyi_data)
@@ -74,11 +75,15 @@ For our 'reduced' model without the interaction term, we achieve statistical sig
 
 For our 'full' model, which includes the interaction term, we achieve statistical significance for the slope coefficients for the main effect of average layovers and the interaction term as well. The estimated slope coefficient for average number of layovers is -238.57968 (95 CI: -448.8797 - -28.27968) and the estimated slope coefficient for the interaction term is 0.20031 (95 CI: 0.08791061 - 0.3127084 )
 
+An F-test comparing the full and reduced models yielded an F value of 9.0017 (p = 0.005103)
+
 Outgoing Group - 
 
 For our 'reduced' model without the interaction term, we achieve statistical signficance for the slope coefficients for mean distance and mean number of layovers. The estimated slope coefficient for mean distance is 0.06566 (95 CI: 0.02868519 - 0.1026327) and for mean layovers is 139.15076 (95 CI: 56.69137 - 221.6102). The Multiple R-squared value for this model is 0.5916.
 
 For our 'full' model, which includes the interation term, we fail to achieve statistical significance for the estimated slope coefficients for any of the main terms, but we do achieve statistical significance for the estimate slope coefficient for the interaction term. The estimated slope coefficient for the interaction term is 7.076e-02 (95 CI: 0.02277662 - 0.11874). The Multiple R-squared value for this model is 0.6791.
+
+An F-test comparing the full and reduced models yielded an F value of 13.063 (p = 0.0009133)
 
 
 **Discussion**
