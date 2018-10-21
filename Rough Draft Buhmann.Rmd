@@ -1,0 +1,23 @@
+---
+title: "First Draft Report"
+author: "Jordan Buhmann"
+date: "October 21, 2018"
+output: html_document
+---
+
+# The Effects of Distance, Number of Layovers, and Geography on Average Plane Ticket Price
+
+### Abstract
+
+### Introduction
+
+#### For many, finding an affordable plane ticket for their next trip can be difficult. Prices can widly vary between locations and at different times of the year, for seemingly unknown reasons. In this report, we attempt to find statistically significant variables that effect the price of a domestic plane ticket in the United States. We use data containing a random sample of U.S. domestic itineraries from 2017, all of which involve a New York airport. This data set contains various information on these flights, including time of year the flight occured, airport of departure and arrival, number of layovers, and of course market price of the ticket, to name a few. We take these data and perform a Multiple Linear Regression model on them to understand the effect they have on the price of the ticket. We find an interesting equation to predict the price of a plane ticket using a few statistically significant variables.
+
+### Methods 
+
+#### In order to create a model on the average price of a plane ticket, the backward elimination method was used. We started with a Multiple Linear Regression model containing the variables "Quarter," which was a number 1-4 corresponding to which season the flight took place in, "Passengers," which was a number showing how many passangers paid the same fare for an itinerary, "Market Distance," which was the total distance in miles covered by the itinerary, "Geography Type," which was a number 1 or 2 for if the itineary was non-contiguous domestic or contiguous domestic, and "Number Layovers," which was a number 0 through 2 corresponding to the number of layovers in the itinerary. Creating this model, the p-values of each individual variable were examined. Then, the variable containing the highest p-value over 0.05 was eliminated, and another model was without that variable. This process was repeated until only variables with a p-value below 0.05 remain. 
+#### Then, an f-test was performed on the model containing only statistically significant variables with a model containing Market Price compared to no variables. This was done to see if the created model will actually show a siginficant effect on Market Price. 
+
+
+
+
