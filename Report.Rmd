@@ -1,0 +1,17 @@
+---
+title: "Report"
+author: "Kushin and Jordan"
+date: "10/20/2018"
+output: html_document
+---
+## Abstract
+
+## Introduction
+
+## Methods
+
+## Results
+
+## Discussion
+
+## Conclusion
