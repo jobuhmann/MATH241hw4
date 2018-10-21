@@ -4,57 +4,88 @@ author: "Kushin"
 date: "10/20/2018"
 output: html_document
 ---
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 library(ggplot2)
 library(dplyr)
 raw_data<- read.csv('itineraries-2017.csv')
 
+#Subsetting for flights that leave from NY state
 ny_data<- raw_data%>%filter(ORIGIN_STATE_ABR=='NY')
+#Linear model where the predictor is a categorical variable for the the airport from which the plane departs
 ny_model<- lm(MARKET_FARE~factor(ORIGIN), data= ny_data)
 summary(ny_model)
 
+#creating a df which contains average fare and layovers for all flights leaving from NY, organized by state
 mean_nyo_data<-raw_data%>%filter(ORIGIN_STATE_ABR=='NY')%>%group_by(DEST_STATE_ABR)%>%summarise(mean_fare= mean(MARKET_FARE), mean_dist = mean(MARKET_DISTANCE), num_lay= mean(numLayovers))
 
+#creating a df which contains average fare and layovers for all flights arriving at NY, organized by state
 mean_nyi_data<- raw_data%>%filter(DEST_STATE_ABR=='NY')%>%group_by(ORIGIN_STATE_ABR)%>%summarise(mean_fare= mean(MARKET_FARE), mean_dist = mean(MARKET_DISTANCE), num_lay= mean(numLayovers))
 
-model1<-lm(mean_fare~ mean_dist+num_lay+num_lay*mean_dist, data= mean_ny_data)
-model2<-lm(mean_fare~ mean_dist+num_lay, data= mean_ny_data)
+
+model1<-lm(mean_fare~ mean_dist+num_lay+num_lay*mean_dist, data= mean_nyo_data)
+model2<-lm(mean_fare~ mean_dist+num_lay, data= mean_nyo_data)
 summary(model1)
 summary(model2)
+ft1<-anova(model1,model2)
+
 model3<-lm(mean_fare~ mean_dist+num_lay+num_lay*mean_dist, data= mean_nyi_data)
 model4<-lm(mean_fare~ mean_dist+num_lay, data= mean_nyi_data)
 summary(model3)
 summary(model4)
 
-ft<-anova(model1,model2)
-ft
+ft2<-anova(model3,model4)
 
 
-ggplot()+geom_point(aes(x=mean_dist, y=mean_fare, col=num_lay), data=mean_ny_data)
+
+ggplot()+geom_point(aes(x=mean_dist, y=mean_fare, col=num_lay), data=mean_nyo_data)
 
 
 
 ```
 
 
-**Intro**
-Given that for the data we have, each of our observations relate to the state of NY in some capacity, we thought it would be interesting to look at airfare trends as they relate to flights flying into and leaving the state and check to see if there are any notable differences. We were also interested in observing any overall trends in domestic U.S. flights, so as to provide potential passengers with knowledge that they may not be aware of when booking tickets at any given point in time between a particular set of states.
-Some commonplace observations that frequent flyers make is that for flights across larger distances, breaking the journey into smaller legs helps reduce the overall cost of the journey. Thus, when flying across large distances on a budget, flyers sometimes look out for flights with one of more layovers. The cost in time is sometimes worth the discount in ticket fare.
+**Intro**  
+Given that for the data we have, each of our observations relate to the state of NY in some way, we thought it would be interesting to look at airfare trends as they relate to flights flying into and leaving the state, and check to see if there are any notable differences between these two groups of flights. We were also interested in observing any overall trends in domestic U.S. flights, so as to provide potential passengers with knowledge that they may not be aware of when booking tickets at any given point in time between a particular set of states.
+
+Some commonplace observations that frequent flyers make is that for flights across larger distances, breaking the journey into smaller legs helps reduce the overall cost of the journey. Thus, when flying across large distances on a budget, flyers sometimes look out for flights with one or more layovers. Perhaps the cost in time is sometimes worth the discount in ticket fare.
 Another observation, which is almost patent, is that flights become much more expensive during certain times of year - notably during the holiday season. So we might expect journeys during a particular time of year to be more expensive than the same journey during other times.
 With these motivating questions, we decided to conduct some statistical analyses to see how well these folk observations hold up to empirical data.
 
-*Methods*
+**Methods**  
 
-Since we were interested in looking at differences between flights that were flying into NY versus those that were departing from NY, we divided our dataset into itineraries of flights that departed from NY and flights that landed in NY.
-There were 4 journeys in the dataset that both began and eded in NY and we included them in both groups.
+Since we were interested in looking at differences between journeys that were ending in NY versus those that were beginning at NY, we divided our dataset into itineraries of flights that departed from NY and flights that landed in NY.
+There were 4 journeys in the dataset that both began and ended in NY, and we included them in both groups.
 Henceforth, the group that included flights that landed in NY will be referred to as the incoming group and the group that included flights that departed from NY will be referred to as the outgoing group.
 
 For each group we found the average flight fare and average number of layovers for flights between NY and all other states. For the incoming group there was data present for 40 states whereas for the outgoing group there was data for 37 states. Since there are multiple airports per state and we were looking at state-state itineraries, we also decided to find the average distance between the starting and ending points of the journey for a given pair of states.
 
-Since flight fare was our dependent variable of interest, we began by fitting multiple linear models for each group where the predictors were mean distance of the journey and mean number of layovers.
-We also fit a version of these models with an interaction term for mean distance andmean number of layovers. The rationale for this was that while we expect longer journeys to naturally be more expensive, having a journey with one or more layovers may mitigate some of those costs.
+Since flight fare was our dependent variable of interest, we began by fitting 2 multiple linear models, one for each group, where the predictors were mean distance of the journey and mean number of layovers.
+Our model can be represented by the following equation - 
+$$\widehat{Fare} = \beta_0 +\beta_1 Mean Distance +\beta_2MeanLayovers $$
+We also fit a version of these models with an interaction term for mean distance and mean number of layovers. The rationale for this was that while we expect longer journeys to naturally be more expensive, having a journey with one or more layovers may mitigate some of those costs.
+This model could be expressed as - 
 
-```{r}
+$$\widehat{Fare} = \beta_0 +\beta_1 Mean Distance +\beta_2MeanLayovers + \beta_3MeanDistance\times MeanLayovers$$
+**Results**
+
+Incoming Group -  
+
+For our 'reduced' model without the interaction term, we achieve statistical significance for the estimated slope coefficient for mean distance. The estimated slope coefficient for mean distance is 0.16776 (95 CI: 0.1043711 - 0.2311455). This model has a Multiple R-squared value of 0.5465.
+
+For our 'full' model, which includes the interaction term, we achieve statistical significance for the slope coefficients for the main effect of average layovers and the interaction term as well. The estimated slope coefficient for average number of layovers is -238.57968 (95 CI: -448.8797 - -28.27968) and the estimated slope coefficient for the interaction term is 0.20031 (95 CI: 0.08791061 - 0.3127084 )
+
+Outgoing Group - 
+
+For our 'reduced' model without the interaction term, we achieve statistical signficance for the slope coefficients for mean distance and mean number of layovers. The estimated slope coefficient for mean distance is 0.06566 (95 CI: 0.02868519 - 0.1026327) and for mean layovers is 139.15076 (95 CI: 56.69137 - 221.6102). The Multiple R-squared value for this model is 0.5916.
+
+For our 'full' model, which includes the interation term, we fail to achieve statistical significance for the estimated slope coefficients for any of the main terms, but we do achieve statistical significance for the estimate slope coefficient for the interaction term. The estimated slope coefficient for the interaction term is 7.076e-02 (95 CI: 0.02277662 - 0.11874). The Multiple R-squared value for this model is 0.6791.
+
+
+**Discussion**
+
+```{r message=FALSE, warning=FALSE, echo =FALSE, paged.print=FALSE}
+confint(model3, 'mean_dist:num_lay' ,level=0.95)
+
 model3<- lm(MARKET_FARE~MARKET_DISTANCE+numLayovers+QUARTER+numLayovers*MARKET_DISTANCE,data=raw_data)
 summary(model3)
 
