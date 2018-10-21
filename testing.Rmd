@@ -31,3 +31,25 @@ ggplot() + geom_point(aes(x=MARKET_DISTANCE,y=MARKET_FARE, col=QUARTER),data=raw
 ggplot() + geom_point(aes(x=MARKET_DISTANCE,y=MARKET_FARE, col=numLayovers),data=raw_data)+ylim(0,2000)
 ggplot() + geom_boxplot(aes(x=factor(QUARTER), y = MARKET_FARE),data=raw_data)
 ```
+
+```{r}
+# including an interaction between numLayovers and Market distance creates a significant effect on the interaction term, but not for the individual variables, so it will not be included in the model.
+model4<- lm(MARKET_FARE~QUARTER + PASSENGERS + MARKET_DISTANCE + ITIN_GEO_TYPE + numLayovers, data=raw_data)
+summary(model4)
+
+model5<- lm(MARKET_FARE~PASSENGERS + MARKET_DISTANCE + ITIN_GEO_TYPE + numLayovers, data=raw_data)
+summary(model5)
+
+model6<- lm(MARKET_FARE~MARKET_DISTANCE + ITIN_GEO_TYPE + numLayovers, data=raw_data)
+summary(model6)
+
+model7<- lm(MARKET_FARE~1, data=raw_data)
+summary(model7)
+
+anova(model7, model6)
+
+ggplot()+geom_point(aes(x=MARKET_DISTANCE, y=MARKET_FARE, col=numLayovers), data=raw_data) + ylim(0,1500)
+
+confint(model7, level = 0.90)
+
+```
