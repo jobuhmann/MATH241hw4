@@ -12,11 +12,12 @@ library(ggplot2)
 library(dplyr)
 raw_data<- read.csv('itineraries-2017.csv')
 
+
 #Subsetting for flights that leave from NY state
 ny_data<- raw_data%>%filter(ORIGIN_STATE_ABR=='NY')
 #Linear model where the predictor is a categorical variable for the the airport from which the plane departs
 ny_model<- lm(MARKET_FARE~factor(ORIGIN), data= ny_data)
-#summary(ny_model)
+##summary(ny_model)
 
 #creating a df which contains average fare and layovers for all flights leaving from NY, organized by state
 mean_nyo_data<-raw_data%>%filter(ORIGIN_STATE_ABR=='NY')%>%group_by(DEST_STATE_ABR)%>%summarise(mean_fare= mean(MARKET_FARE), mean_dist = mean(MARKET_DISTANCE), num_lay= mean(numLayovers))
@@ -26,38 +27,40 @@ mean_nyi_data<- raw_data%>%filter(DEST_STATE_ABR=='NY')%>%group_by(ORIGIN_STATE_
 
 
 #Full and reduced models for obtaining expected mean fare from mean distance and mean layovers. Reduced model does not have the interaction term. This set of models is for outgoing flights data
-model1<-lm(mean_fare~ mean_dist+num_lay+num_lay*mean_dist, data= mean_nyo_data)
-model2<-lm(mean_fare~ mean_dist+num_lay, data= mean_nyo_data)
-#summary(model1)
-#summary(model2)
+model5<-lm(mean_fare~ mean_dist+num_lay+num_lay*mean_dist, data= mean_nyo_data)
+model6<-lm(mean_fare~ mean_dist+num_lay, data= mean_nyo_data)
+##summary(model5)
+##summary(model6)
 
 #F-test to compare full and reduced models
-ft1<-anova(model1,model2)
-#ft1
+ft2<-anova(model5,model6)
+##ft2
 
 
 #Full and reduced models for obtaining expected mean fare from mean distance and mean layovers. Reduced model does not have the interaction term. This set of models is for incoming flights data
-model3<-lm(mean_fare~ mean_dist+num_lay+num_lay*mean_dist, data= mean_nyi_data)
-model4<-lm(mean_fare~ mean_dist+num_lay, data= mean_nyi_data)
-summary(model3)
-#summary(model4)
+model7<-lm(mean_fare~ mean_dist+num_lay+num_lay*mean_dist, data= mean_nyi_data)
+model8<-lm(mean_fare~ mean_dist+num_lay, data= mean_nyi_data)
+##summary(model7)
+##summary(model8)
 
 #F-test to compare full and reduced models
-ft2<-anova(model3,model4)
-#ft2
+ft3<-anova(model7,model8)
+##ft3
 
 #Exploratory plot to look at how distance and number of layovers relates to fares for outgoing flights
 
-ggplot()+geom_point(aes(x=mean_dist, y=mean_fare, col=num_lay), data=mean_nyo_data)
-ggplot()+geom_point(aes(x=mean_dist, y=mean_fare, col=num_lay), data=mean_nyi_data)
+ggplot()+geom_point(aes(x=mean_dist, y=mean_fare, col=num_lay), data=mean_nyo_data) + ggtitle("Figure 4. Scatterplot of Mean Fare Compared to Mean Distance and Mean Layovers for Outgoing Flights")
+ggplot()+geom_point(aes(x=mean_dist, y=mean_fare, col=num_lay), data=mean_nyi_data) ("Figure 5. Scatterplot of Mean Fare Compared to Mean Distance and Mean Layovers for Incoming Flights")
 
 #Generic code for obtaining conf intervals for slope estimates
-#confint(model3, 'mean_dist:num_lay' ,level=0.95)
-
+##confint(model7, 'mean_dist:num_lay' ,level=0.95)
 
 
 ```
 
+**Abstract**
+
+We look at a dataset of itenarires that begin or end in New York state and apply Multiple Linear Regression models to investigate the factors that influence the average fare
 
 **Intro**  
 Given that for the data we have, each of our observations relate to the state of NY in some way, we thought it would be interesting to look at airfare trends as they relate to flights flying into and leaving the state, and check to see if there are any notable differences between these two groups of flights. We were also interested in observing any overall trends in domestic U.S. flights, so as to provide potential passengers with knowledge that they may not be aware of when booking tickets at any given point in time between a particular set of states.
